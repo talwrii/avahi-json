@@ -1,0 +1,19 @@
+[build-system]
+requires = [ "setuptools>=42",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "avahi-json"
+version = "1.0.0"
+description = "Output details of hosts on the network found by Linux's avahi mdns server in JSON. "
+dependencies = ['frozendict']
+readme = "README.md"
+[[project.authors]]
+name = "@readwithai"
+email = "talwrii@github.com"
+
+[project.scripts]
+avahi-json = "avahi_json.main:main"
+
+[project.urls]
+Homepage = "https://github.com/talwrii/avahi-json"
