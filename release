@@ -1,0 +1,29 @@
+#!/bin/bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+git push
+
+# Extract version from pyproject.toml if it exists, otherwise fall back to setup.py
+if [ -f pyproject.toml ]; then
+    VERSION=$(cat pyproject.toml | ini2json | jq -rc '.project.version')
+else
+    VERSION=$(python3 setup.py --version)
+fi
+
+# Tag the commit with the extracted version
+git tag "$VERSION"
+git push --tags
+
+rm -rf dist *.egg-info build
+
+# Build the source distribution (use setup.py or build)
+if [ -f pyproject.toml ]; then
+    python3 -m build
+else
+    python3 setup.py sdist
+fi
+
+# Upload to PyPI using Twine
+twine upload -p $(cat token) dist/*
