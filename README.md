@@ -2,7 +2,7 @@
 **@readwithai** - [X](https://x.com/readwithai) - [blog](https://readwithai.substack.com/) - [machine-aided reading](https://www.reddit.com/r/machineAidedReading/) - [📖](https://readwithai.substack.com/p/what-is-reading-broadly-defined
 )[⚡️](https://readwithai.substack.com/s/technical-miscellany)[🖋️](https://readwithai.substack.com/p/note-taking-with-obsidian-much-of)
 
-Query the local network for devices and services using MDNS via avahi (like `avahi-browser -ar`) but output results in easy-to-use JSON.
+Query the local network for devices and services using MDNS bia avahi (like `avahi-browser -ar`) but output results in easy-to-use JSON.
 
 ## Motivation
 I have an Android phone on my home network. I also use KDE connect on the phone. I occassionally want to connect to this phone via ADB over a TCP connection, but the IP address is not fixed.
