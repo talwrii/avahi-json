@@ -4,8 +4,21 @@ import json
 import logging
 import sys
 
-import dbus
-import dbus.mainloop.glib
+# Check for dbus before other imports
+try:
+    import dbus
+    import dbus.mainloop.glib
+except ImportError:
+    print("ERROR: dbus module not found.", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("You need to install python3-avahi system package:", file=sys.stderr)
+    print("  sudo apt install python3-avahi", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("Then reinstall avahi-json with --system-site-packages:", file=sys.stderr)
+    print("  pipx uninstall avahi-json", file=sys.stderr)
+    print("  pipx install --system-site-packages avahi-json", file=sys.stderr)
+    sys.exit(1)
+
 from frozendict import frozendict
 from gi.repository import GLib
 
@@ -14,16 +27,13 @@ AVAHI_PROTO_UNSPEC = -1
 AVAHI_IF_UNSPEC = -1
 
 dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-
 bus = dbus.SystemBus()
 avahi_server = bus.get_object('org.freedesktop.Avahi', '/')
 server = dbus.Interface(avahi_server, 'org.freedesktop.Avahi.Server')
-
 main_loop = GLib.MainLoop()
 
 service_types = set()
 service_browsers = {}
-
 
 def resolve_service(service_data):
     logging.debug(f"Resolving service: {service_data['name']}.{service_data['stype']}.{service_data['domain']}...")
@@ -46,6 +56,7 @@ def print_resolved_service(*args):
         txt_strings = [bytes(entry).decode('utf-8', errors='replace') if hasattr(entry, '__iter__') else str(entry) for entry in resolved["txt"]]
     except Exception:
         txt_strings = [str(entry) for entry in resolved["txt"]]
+    
     output = {
         "name": resolved["name"],
         "service_type": resolved["stype"],
@@ -98,11 +109,9 @@ def service_type_found(interface, protocol, name, transport, domain, flags):
 
 def found_all_service_types():
     logging.debug("Finished browsing for service types.")
-
     if not service_types:
         logging.debug("No service types found, quitting.")
         main_loop.quit()
-
 
 PARSER = argparse.ArgumentParser(description='Find services using MDNS (avahi) in machine readable JSON.', epilog="@readwithai 📖 https://readwithai.substack.com/ ⚡️ machine-aided reading ✒️")
 PARSER.add_argument('--debug', action='store_true')
@@ -114,7 +123,7 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-
+    
     type_browser_path = server.ServiceBrowserNew(
         AVAHI_IF_UNSPEC,
         AVAHI_PROTO_UNSPEC,
