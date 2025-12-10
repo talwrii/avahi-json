@@ -7,7 +7,7 @@ git push
 
 # Extract version from pyproject.toml if it exists, otherwise fall back to setup.py
 if [ -f pyproject.toml ]; then
-    VERSION=$(cat pyproject.toml | ini2json | jq -rc '.project.version')
+    VERSION=$(cat pyproject.toml | toml2json | jq -rc '.project.version')
 else
     VERSION=$(python3 setup.py --version)
 fi
